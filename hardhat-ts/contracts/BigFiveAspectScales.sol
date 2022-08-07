@@ -105,6 +105,15 @@ contract BigFiveAspectsScales is ERC721, ERC721URIStorage {
         questions.push(Question("Worry about things.", false, Scale.emotionalStability));
     }
 
+    function getQuestions() public view returns (string[] memory) {
+        uint length = questions.length;
+        string[] memory array = new string[](length);
+        for(uint i=0; i<length; i++) {
+            array[i] = questions[i].question;
+        }
+        return array;
+    }
+
     function mintResultNFT(uint[] memory _inputs) public {
 
         for(uint i=0; i<_inputs.length; i++) {

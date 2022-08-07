@@ -1,4 +1,4 @@
-import { Badge, Box, Button, Flex } from '@chakra-ui/react'
+import { Badge, Box, Button, Flex, FormControl, FormErrorMessage, FormLabel, Radio, Text } from '@chakra-ui/react'
 import Head from 'next/head'
 import {
    useContractRead,
@@ -9,15 +9,18 @@ import {
 import { useForm } from 'react-hook-form'
 
 const contractABI = require('../../abis/BigFiveAspectsScales.json')
+const contractAddress = "0xd961Fa6C2BEd54bF788dc16Cc96362b80ffe560a"
 
 export default function BigFive() {
    // const [answers, setAnswers] = useState<number[]>([])
+   
    const {
       register,
       handleSubmit,
       watch,
       formState: { errors },
    } = useForm()
+
    const onSubmit = (data: number[]) => {
       console.log(data)
       //@ts-ignore
@@ -25,11 +28,11 @@ export default function BigFive() {
    }
 
    // Load questions from contract
-   // const { data:readData, isError:isErrorRead, isLoading:isLoadingRead } = useContractRead({
-   //    addressOrName: '0xecb504d39723b0be0e3a9aa33d646642d1051ee1',
-   //    contractInterface: contractABI,
-   //    functionName: 'getHunger',
-   //  })
+   const { data:questions, isError:isErrorRead, isLoading:isLoadingRead } = useContractRead({
+      addressOrName: contractAddress,
+      contractInterface: contractABI,
+      functionName: 'getQuestions',
+    })
 
    // Load contract
    const {
@@ -37,7 +40,7 @@ export default function BigFive() {
       error: prepareError,
       isError: isPrepareError,
    } = usePrepareContractWrite({
-      addressOrName: '0x302D212529a749aD7c385790A6b1BfC9F5edE359',
+      addressOrName: contractAddress,
       contractInterface: contractABI,
       functionName: 'mintResultNFT',
    })
@@ -57,20 +60,33 @@ export default function BigFive() {
    }
 
    return (
-      <Box>
+      <Box p={8} overflow="auto">
          <Head>
             <title>OpenPersonality · Big 5</title>
          </Head>
-         <Box>
+         <Box width="500px" maxW="100%" m="auto">
             {/* @ts-ignore */}
             <form onSubmit={handleSubmit(onSubmit)}>
-               {/* register your input into the hook by invoking the "register" function */}
-               <input defaultValue="test" {...register('example')} />
 
-               {/* include validation with required or other standard HTML validation rules */}
-               <input {...register('exampleRequired', { required: true })} />
-               {/* errors will return when field validation fails  */}
-               {errors.exampleRequired && <span>This field is required</span>}
+               {questions && questions.map((q, i) => (
+                  <FormControl key={`${i}`}>
+                     <FormLabel>{q}</FormLabel>
+                     <Flex justifyContent="space-between">
+                        <Text>Very Inaccurate</Text>
+                        <Text>Very Accurate</Text>
+                     </Flex>
+                     <Flex justifyContent="space-between">
+                     <Radio {...register(`${i}`, { required: true, value: 1 })}></Radio>
+                     <Radio {...register(`${i}`, { required: true, value: 2 })}></Radio>
+                     <Radio {...register(`${i}`, { required: true, value: 3 })}></Radio>
+                     <Radio {...register(`${i}`, { required: true, value: 4 })}></Radio>
+                     <Radio {...register(`${i}`, { required: true, value: 5 })}></Radio>
+                     </Flex>
+                     {errors.exampleRequired && (
+                        <FormErrorMessage>Please answer this question</FormErrorMessage>
+                     )}
+                  </FormControl>
+               ))}
 
                <Button type="submit" disabled={!write || isLoading}>
                   {isLoading ? 'Minting...' : 'Mint'}

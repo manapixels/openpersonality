@@ -10,7 +10,7 @@ import {
    Text,
    Tooltip,
 } from '@chakra-ui/react'
-import { useAccount, useConnect, useEnsName } from 'wagmi'
+import { useAccount, useConnect, useDisconnect, useEnsName } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 
 import styles from '../styles/Sidebar.module.css'
@@ -24,7 +24,8 @@ export default function Sidebar() {
    const { address, isConnected } = useAccount()
    const { connect } = useConnect({
       connector: new InjectedConnector(),
-    })
+   })
+   const { disconnect } = useDisconnect()
 
    useEffect(() => {
       connect()
@@ -37,32 +38,33 @@ export default function Sidebar() {
                <Image
                   src={logo.src}
                   alt=""
-                  width="200px"
+                  width="160px"
                   mb={5}
                   opacity="0.6"
                />
                <Button
                   id="walletButton"
-                  onClick={() => connect()}
-                  size="sm"
+                  onClick={() => (isConnected ? disconnect() : connect())}
+                  size="xs"
                   variant="black"
                >
                   {isConnected ? (
-                     'Connected: ' + (
-                     String(address).substring(0, 6) +
-                     '...' +
-                     String(address).substring(38)
-                     )
+                     'Connected: ' +
+                     (String(address).substring(0, 6) +
+                        '...' +
+                        String(address).substring(38))
                   ) : (
                      <span>Connect Wallet</span>
                   )}
                </Button>
             </Flex>
-            <Heading size="lg">Every one of us is unique ❤️</Heading>
 
-            <Text fontSize="lg" mb={4}>
-               Mint your unique personality traits NFT
-            </Text>
+            <Box my={7}>
+               <Heading size="lg">Every one of us is unique ❤️</Heading>
+               <Text fontSize="lg" mb={4}>
+                  Mint your unique personality traits NFT
+               </Text>
+            </Box>
 
             <div className={`${styles.grid}`}>
                <Link href="/tests/bigfive">
