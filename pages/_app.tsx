@@ -93,11 +93,10 @@ function MyApp({ Component, pageProps }: AppProps) {
                   sizes="16x16"
                   href="/favicon-16x16.png"
                />
-               <link rel="manifest" href="/site.webmanifest" />
             </Head>
-            <Flex>
+            <Flex height="100vh">
                <Sidebar />
-               <Box flex="1" background="gray.100">
+               <Box flex="1" background="gray.100" overflow="auto" className="custom-scrollbar">
                   <Component {...pageProps} />
                </Box>
             </Flex>

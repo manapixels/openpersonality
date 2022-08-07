@@ -16,21 +16,22 @@ a {
 }
 
 .custom-scrollbar {
-   scrollbar-width: thin !important;
-   scrollbar-color: var(--chakra-colors-lightgray-600) #fff !important;
+   scrollbar-width: thin;
+   scrollbar-color: var(--chakra-colors-gray-400) #fff;
 }
 .custom-scrollbar::-webkit-scrollbar {
-   width: 6px !important;
+   width: 6px;
+   height: 10px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-   background: var(--chakra-colors-lightgray-300) !important;
-   border-radius: 10px !important;
+   background: var(--chakra-colors-gray-200);
+   border-radius: 10px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-   background-color: var(--chakra-colors-lightgray-600) !important;
-   border-radius: 6px !important;
+   background-color: var(--chakra-colors-gray-400);
+   border-radius: 6px;
 }
 
 @media (prefers-color-scheme: dark) {

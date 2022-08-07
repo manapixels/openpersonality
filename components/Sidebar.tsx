@@ -32,7 +32,7 @@ export default function Sidebar() {
    }, [])
 
    return (
-      <Box className={styles.sidebar}>
+      <Box className={`${styles.sidebar} custom-scrollbar`} overflow="auto">
          <Box className={styles.main}>
             <Flex justifyContent="space-between">
                <Image
@@ -60,13 +60,10 @@ export default function Sidebar() {
             </Flex>
 
             <Box my={7}>
-               <Heading size="lg">Every one of us is unique ❤️</Heading>
-               <Text fontSize="lg" mb={4}>
-                  Mint your unique personality traits NFT
-               </Text>
+               <Heading size="md">Mint your unique personality NFTs ❤️</Heading>
             </Box>
 
-            <div className={`${styles.grid}`}>
+            <div className={`${styles.grid} custom-scrollbar`}>
                <Link href="/tests/bigfive">
                   <Button
                      className={styles.card}
@@ -276,7 +273,7 @@ export default function Sidebar() {
                mr={1}
                mt={8}
             >
-               <TagLabel>More trait tests coming soon 😉</TagLabel>
+               <TagLabel>More tests coming soon 😉</TagLabel>
             </Tag>
          </Box>
          <footer className={styles.footer}>
