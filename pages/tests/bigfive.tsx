@@ -14,10 +14,10 @@ import NFT from '../../types/NFT'
 const contractABI = require('../../abis/BigFiveAspectsScales.json')
 const contractAddress = "0x5CaA995A1598B67e840F6DAdFA0e4BE4D5760A0F"
 
-let obj:any = {}
-for (let i=0; i<64; i++) {
-   obj[`qns${i}`] = Math.floor(Math.random() * (5 - 1 + 1) + 1).toString()
-}
+// let obj:any = {}
+// for (let i=0; i<64; i++) {
+//    obj[`qns${i}`] = Math.floor(Math.random() * (5 - 1 + 1) + 1).toString()
+// }
 export default function BigFive() {
 
    const [isLoading, setIsLoading] = useState(false)
@@ -33,7 +33,7 @@ export default function BigFive() {
       formState: { errors },
    } = useForm({
       shouldFocusError: true,
-      defaultValues: obj
+      // defaultValues: obj
    })
 
    // Load questions from contract
