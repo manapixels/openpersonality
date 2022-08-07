@@ -1,4 +1,4 @@
-import { Box, Button, Flex, FormControl, FormLabel, Image, Link, Spinner, Text } from '@chakra-ui/react'
+import { Box, Button, Flex, FormControl, FormLabel, Image, Link, Progress, Spinner, Text } from '@chakra-ui/react'
 import Head from 'next/head'
 import {
    useAccount,
@@ -104,9 +104,54 @@ export default function BigFive() {
                {nfts.map((nft, i) => (
                   <Box key={i}>
                      {nft?.metadata && (
-                        <Box>
-                           <Image src={nft.metadata?.image} alt="" width="300px" height="300px" />
-                           <Text>{nft.metadata.name}</Text>
+                        <Box background="white" borderRadius="md" p={3}>
+                           <Image src={nft.metadata?.image} alt="" width="180px" height="180px" borderRadius="sm" />
+                           <Text fontWeight="bold">{nft.metadata.name}</Text>
+                           {nft?.metadata?.extraversion && (
+                              <Box>
+                                 <Text fontSize="sm">Extraversion</Text>
+                                 <Flex width="100%" alignItems="center">
+                                    <Progress value={parseFloat(nft.metadata.extraversion)/5*100} flex="1" />
+                                    <Text fontSize="sm" ml={2}>{(parseFloat(nft.metadata.extraversion)/5*100).toFixed(0)}%</Text>
+                                 </Flex>
+                              </Box>
+                           )}
+                           {nft?.metadata?.conscientiousness && (
+                              <Box>
+                                 <Text fontSize="sm">Conscientiousness</Text>
+                                 <Flex width="100%" alignItems="center">
+                                    <Progress value={parseFloat(nft.metadata.conscientiousness)/5*100} flex="1" />
+                                    <Text fontSize="sm" ml={2}>{(parseFloat(nft.metadata.conscientiousness)/5*100).toFixed(0)}%</Text>
+                                 </Flex>
+                              </Box>
+                           )}
+                           {nft?.metadata?.agreeableness && (
+                              <Box>
+                                 <Text fontSize="sm">Agreeableness</Text>
+                                 <Flex width="100%" alignItems="center">
+                                    <Progress value={parseFloat(nft.metadata.agreeableness)/5*100} flex="1" />
+                                    <Text fontSize="sm" ml={2}>{(parseFloat(nft.metadata.agreeableness)/5*100).toFixed(0)}%</Text>
+                                 </Flex>
+                              </Box>
+                           )}
+                           {nft?.metadata?.emotionalStability && (
+                              <Box>
+                                 <Text fontSize="sm">Emotional Stability</Text>
+                                 <Flex width="100%" alignItems="center">
+                                    <Progress value={parseFloat(nft.metadata.emotionalStability)/5*100} flex="1" />
+                                    <Text fontSize="sm" ml={2}>{(parseFloat(nft.metadata.emotionalStability)/5*100).toFixed(0)}%</Text>
+                                 </Flex>
+                              </Box>
+                           )}
+                           {nft?.metadata?.intellect && (
+                              <Box>
+                                 <Text fontSize="sm">Openness</Text>
+                                 <Flex width="100%" alignItems="center">
+                                    <Progress value={parseFloat(nft.metadata.intellect)/5*100} flex="1" />
+                                    <Text fontSize="sm" ml={2}>{(parseFloat(nft.metadata.intellect)/5*100).toFixed(0)}%</Text>
+                                 </Flex>
+                              </Box>
+                           )}
                         </Box>
                      )}
                   </Box>

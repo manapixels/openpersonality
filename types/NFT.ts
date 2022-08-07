@@ -18,6 +18,11 @@ export default interface NFT {
         description?: string
         image?: string
         name: string
+        extraversion: string
+        conscientiousness: string
+        agreeableness: string
+        emotionalStability: string
+        intellect: string
     }
     timeLastUpdated: string
     title: string
