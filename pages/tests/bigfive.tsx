@@ -1,5 +1,4 @@
-import { Box, Button, Flex, FormControl, FormLabel, Link, Spinner, Text } from '@chakra-ui/react'
-// import { Network, Alchemy } from "alchemy-sdk"
+import { Box, Button, Flex, FormControl, FormLabel, Image, Link, Spinner, Text } from '@chakra-ui/react'
 import Head from 'next/head'
 import {
    useAccount,
@@ -10,10 +9,10 @@ import {
 } from 'wagmi'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
+import NFT from '../../types/NFT'
 
 const contractABI = require('../../abis/BigFiveAspectsScales.json')
-const contractAddress = "0xd961Fa6C2BEd54bF788dc16Cc96362b80ffe560a"
+const contractAddress = "0x5CaA995A1598B67e840F6DAdFA0e4BE4D5760A0F"
 
 let obj:any = {}
 for (let i=0; i<64; i++) {
@@ -23,10 +22,11 @@ export default function BigFive() {
 
    const [isLoading, setIsLoading] = useState(false)
    const [hash, setHash] = useState()
+   const [nfts, setNfts] = useState<NFT[]>([])
+   const [isDoingTest, setIsDoingTest] = useState(true)
    const { address } = useAccount()
    const { data: signer } = useSigner()
-   const router = useRouter()
-   
+
    const {
       register,
       handleSubmit,
@@ -49,35 +49,82 @@ export default function BigFive() {
       signerOrProvider: signer,
     })
 
-   const { isLoading: isLoadingTxn, isSuccess: isSuccessTxn } = useWaitForTransaction({
-      hash
-   })
-
+   
    const onSubmit: SubmitHandler<any> = async unformattedData => {
       const data = Object.keys(unformattedData).map((k, i) => {
          return unformattedData[k]
       })
-      console.log('onSubmit:', data, contract)
+
+      // console.log('onSubmit:', data, contract)
 
       if (window.ethereum && contract) {
          setIsLoading(true)
-         contract.mintResultNFT(data).then((result: any) => {
-            console.log(result)
-            if (result.hash) {
-               setHash(hash)
-            }
-         })
-
-         setIsLoading(false)
+         try {
+            await contract.mintResultNFT(data).then((result: any) => {
+               // console.log(result)
+               if (result.hash) {
+                  setHash(result.hash)
+               }
+            })
+            setIsLoading(false)
+         } catch(e) {
+            console.log(e)
+         }
       }
    }
 
+   const { isLoading: isLoadingTxn, isSuccess: isSuccessTxn } = useWaitForTransaction({
+      hash
+   })
+
+   useEffect(() => {
+      if (address) {
+         const baseURL = `https://eth-goerli.g.alchemy.com/nft/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}/getNFTs`
+
+         fetch(`${baseURL}?contractAddresses[]=${contractAddress}&owner=${address}`, {
+            method: 'GET',
+         })
+            .then((response) => response.json())
+            .then((data) => {
+               console.log('✅[GET][NFTs]:', data)
+               if (data?.ownedNfts && data.ownedNfts.length > 0) {
+                  setNfts(data.ownedNfts)
+                  setIsDoingTest(false)
+               }
+               
+            })
+            .catch((error) => console.log('error', error))
+      }
+   }, [address, isSuccessTxn])
+
+   if (nfts && nfts.length > 0 && !isDoingTest) {
+      return (
+         <Flex justifyContent="center" alignItems="center" minHeight="100vh" flexDirection="column" p={8}>
+            <Box mb={8}>
+               {nfts.map((nft, i) => (
+                  <Box key={i}>
+                     {nft?.metadata && (
+                        <Box>
+                           <Image src={nft.metadata?.image} alt="" width="300px" height="300px" />
+                           <Text>{nft.metadata.name}</Text>
+                        </Box>
+                     )}
+                  </Box>
+               ))}
+            </Box>
+            <Button colorScheme='blue' onClick={() => setIsDoingTest(true)} variant="outline">Take test again</Button>
+         </Flex>
+      )
+   }
+
    if (hash && isLoadingTxn) {
-      <Flex height="100vh" alignContent="center" justifyContent="center">
-         <Spinner />
-         <Text>Awaiting confirmation on blockchain...</Text>
-         <Text><Link href={`https://goerli.etherscan.io/tx/${hash}`}>View Transaction</Link></Text>
-      </Flex>
+      return (
+         <Flex height="100vh" alignItems="center" justifyContent="center" flexDirection="column">
+            <Spinner />
+            <Text>Awaiting confirmation on blockchain...</Text>
+            <Text><Link href={`https://goerli.etherscan.io/tx/${hash}`}>View Transaction</Link></Text>
+         </Flex>
+      )
    }
 
    return (
@@ -123,9 +170,9 @@ export default function BigFive() {
                )})}
             </Box>
             <Box py={2} px={8} background="white" position="sticky" bottom="0" borderTop="1px solid var(--chakra-colors-gray-200)">
-                  <Box width="620px" maxW="100%" textAlign="right">
-                     <Button type="submit" disabled={isLoading} variant="black">
-                        {isLoading ? 'Minting...' : 'Submit & Mint'}
+                  <Box width="620px" maxW="100%" textAlign="right" mx="auto">
+                     <Button type="submit" disabled={isLoading || isLoadingTxn} variant="black">
+                        {(isLoading || isLoadingTxn) ? 'Minting...' : 'Submit & Mint'}
                      </Button>
                   </Box>
                   

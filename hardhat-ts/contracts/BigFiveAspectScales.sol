@@ -38,7 +38,7 @@ contract BigFiveAspectsScales is ERC721, ERC721URIStorage {
     Question[] questions;
     mapping(uint256 => Output) outputs;
 
-    constructor() ERC721("Big Five Aspects Scales", "BFAS") {
+    constructor() ERC721("Big Five Aspects Scales", "BIG5") {
         questions.push(Question("Am a very private person.", false, Scale.extraversion));
         questions.push(Question("Am always prepared.", true, Scale.conscientiousness));
         questions.push(Question("Am easily disturbed.", false, Scale.emotionalStability));
@@ -151,6 +151,13 @@ contract BigFiveAspectsScales is ERC721, ERC721URIStorage {
     }
 
     function generateTokenURI(uint256 tokenId) public view returns (string memory) {
+        
+        string memory extraversionScore = division(2, outputs[tokenId].scores[0], outputs[tokenId].counts[0]);
+        string memory conscientiousnessScore = division(2, outputs[tokenId].scores[1], outputs[tokenId].counts[1]);
+        string memory agreeablenessScore = division(2, outputs[tokenId].scores[2], outputs[tokenId].counts[2]);
+        string memory emotionalStabilityScore = division(2, outputs[tokenId].scores[3], outputs[tokenId].counts[3]);
+        string memory intellectScore = division(2, outputs[tokenId].scores[4], outputs[tokenId].counts[4]);
+
         bytes memory svgData = abi.encodePacked(
             "data:image/svg+xml;base64,",
             Base64.encode(
@@ -159,19 +166,19 @@ contract BigFiveAspectsScales is ERC721, ERC721URIStorage {
                         '<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin meet" viewBox="0 0 350 350"><style>.base { fill: white; font-family: serif; font-size: 14px; }</style><rect width="100%" height="100%" fill="#c4933b" />',
                         '<text x="10" y="20" class="base">',
                         "Extraversion: ",
-                        Strings.toString(outputs[tokenId].scores[0]/outputs[tokenId].counts[0]),
+                        extraversionScore,
                         '</text><text x="10" y="40" class="base">',
                         "Conscientiousness: ",
-                        Strings.toString(outputs[tokenId].scores[1]/outputs[tokenId].scores[1]),
+                        conscientiousnessScore,
                         '</text><text x="10" y="60" class="base">',
                         "Agreeableness: ",
-                        Strings.toString(outputs[tokenId].scores[2]/outputs[tokenId].scores[2]),
+                        agreeablenessScore,
                         '</text><text x="10" y="80" class="base">',
                         "Emotional Stability: ",
-                        Strings.toString(outputs[tokenId].scores[3]/outputs[tokenId].scores[3]),
+                        emotionalStabilityScore,
                         '</text><text x="10" y="100" class="base">',
                         "Intellect: ",
-                        Strings.toString(outputs[tokenId].scores[4]/outputs[tokenId].scores[4]),
+                        intellectScore,
                         '</text></svg>'
                     )
                 )
@@ -187,6 +194,11 @@ contract BigFiveAspectsScales is ERC721, ERC721URIStorage {
                             '{',
                                 '"name": ', '"', name(), ' #', Strings.toString(tokenId), '",'
                                 '"description": "",'
+                                '"extraversion": ', '"', extraversionScore, '",'
+                                '"conscientiousness": ', '"', conscientiousnessScore, '",'
+                                '"agreeableness": ', '"', agreeablenessScore, '",'
+                                '"emotionalStability": ', '"', emotionalStabilityScore, '",'
+                                '"intellect": ', '"', intellectScore, '",'
                                 '"image": "',
                                 svgData,
                                 '"',
@@ -196,6 +208,27 @@ contract BigFiveAspectsScales is ERC721, ERC721URIStorage {
                 )
             )
         );
+    }
+
+    function division(uint256 decimalPlaces, uint256 numerator, uint256 denominator) public pure returns(string memory result) {
+        uint256 factor = 10**decimalPlaces;
+        uint256 quotient  = numerator / denominator;
+        bool rounding = 2 * ((numerator * factor) % denominator) >= denominator;
+        uint256 remainder = (numerator * factor / denominator) % factor;
+        if (rounding) {
+            remainder += 1;
+        }
+        result = string(abi.encodePacked(Strings.toString(quotient), '.', numToFixedLengthStr(decimalPlaces, remainder)));
+    }
+
+    function numToFixedLengthStr(uint256 decimalPlaces, uint256 num) pure internal returns(string memory result) {
+        bytes memory byteString;
+        for (uint256 i = 0; i < decimalPlaces; i++) {
+            uint256 remainder = num % 10;
+            byteString = abi.encodePacked(Strings.toString(remainder), byteString);
+            num = num/10;
+        }
+        result = string(byteString);
     }
 
     // The following functions are overrides required by Solidity.
